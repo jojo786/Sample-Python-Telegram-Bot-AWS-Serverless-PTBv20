@@ -6,7 +6,7 @@ Description: >
 Globals:
   Function:
     Timeout: 3
-    Runtime: python3.9
+    Runtime: python3.10
     Architectures:
       - arm64
 
@@ -21,6 +21,6 @@ Resources:
 
 Outputs:
   TelegramApi:
-    Description: "Lambda URL for PTB function"
+    Description: "Lambda Function URL for PTB API"
     Value:
       Fn::GetAtt: PTBFunctionUrl.FunctionUrl
