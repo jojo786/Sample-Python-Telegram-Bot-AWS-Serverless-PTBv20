@@ -6,12 +6,14 @@ For PTB v13.x, see [this repo](https://github.com/jojo786/Sample-Python-Telegram
 This project contains source code and supporting files for a [Python Telegram Bot](https://python-telegram-bot.readthedocs.io/en/stable/) v20.x serverless application, using [Webhooks](https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks), that you can deploy with the [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html). Serverless is the best way to run a bot - with webhooks, there is no polling, and your bot only gets invoked when needed. You can run this for free - the [AWS Lambda free tier](https://aws.amazon.com/lambda/pricing/) includes one million free requests per month and 400,000 GB-seconds of compute time per month.
 
 # Versions
-- Python 3.9 
-- python-telegram-bot 20.2 (pinned in `requirements.txt`)
+- Python 3.10 
+- python-telegram-bot 20.4 (pinned in `requirements.txt`)
 
 # Architecture
 Requests come in via the [Lambda Function URL](https://aws.amazon.com/blogs/aws/announcing-aws-lambda-function-urls-built-in-https-endpoints-for-single-function-microservices/) endpoint, which get routed to a Lambda function. The Lambda function runs and posts back to Telegram. Logs are stored on CloudWatch. All of this is defined using [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html), an IaC toolkit that simplifies building and running serverless applications on AWS.
 ![architecture](Architecture.png)
+
+ 
 
 It includes the following files and folders.
 
@@ -20,6 +22,8 @@ It includes the following files and folders.
 - tests - Unit tests for the application code. 
 - template.yaml - A template that defines the application's AWS resources.
 - requirements.txt - which pins the version of python-telegram-bot
+- diagram.py - Uses [Diagrams](https://github.com/mingrammer/diagrams) to visualise the architecture:
+![Diagram](ptb-aws.png)
 
 The application uses several AWS resources, including a Lambda function and a Lambda Function URL HTTPS endpoint as a Telegram webhook. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
 
