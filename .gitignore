@@ -6,3 +6,4 @@ tmp.py
 .mypy_cache/
 .venv
 .cdk.out/
+samconfig.toml
