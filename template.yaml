@@ -6,7 +6,7 @@ Description: >
 Globals:
   Function:
     Timeout: 3
-    Runtime: python3.12
+    Runtime: python3.13
     Tags:
       project: "Python-Telegram-Bot"
     Architectures:
