@@ -20,7 +20,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 #lambda handler, which is what will be invoked by AWS Lambda, which calls main
 def lambda_handler(event, context):
-    return asyncio.get_event_loop().run_until_complete(main(event, context))
+    return asyncio.run(main(event, context))
 
 async def main(event, context):
     start_handler = CommandHandler('start', start)
