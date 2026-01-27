@@ -7,7 +7,7 @@ This project contains source code and supporting files for a [Python Telegram Bo
 
 # Versions
 - Python 3.13 
-- python-telegram-bot 21.10 (pinned in `requirements.txt`)
+- python-telegram-bot 22.6 (pinned in `requirements.txt`)
 
 # Architecture
 Requests come in via the [Lambda Function URL](https://aws.amazon.com/blogs/aws/announcing-aws-lambda-function-urls-built-in-https-endpoints-for-single-function-microservices/) endpoint, which get routed to a Lambda function. The Lambda function runs and posts back to Telegram. Logs are stored on CloudWatch. All of this is defined using [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html), an IaC toolkit that simplifies building and running serverless applications on AWS.
