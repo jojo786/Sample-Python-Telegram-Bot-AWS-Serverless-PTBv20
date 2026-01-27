@@ -6,7 +6,7 @@ For PTB v13.x, see [this repo](https://github.com/jojo786/Sample-Python-Telegram
 This project contains source code and supporting files for a [Python Telegram Bot](https://python-telegram-bot.readthedocs.io/en/stable/) v20.x serverless application, using [Webhooks](https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks), that you can deploy with the [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html). Serverless is the best way to run a bot - with webhooks, there is no polling, and your bot only gets invoked when needed. You can run this for free - the [AWS Lambda free tier](https://aws.amazon.com/lambda/pricing/) includes one million free requests per month and 400,000 GB-seconds of compute time per month.
 
 # Versions
-- Python 3.13 
+- Python 3.14 
 - python-telegram-bot 22.6 (pinned in `requirements.txt`)
 
 # Architecture
