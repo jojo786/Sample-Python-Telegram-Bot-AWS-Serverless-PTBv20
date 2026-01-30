@@ -44,7 +44,7 @@ This bot implements [**real-time response streaming**](https://hacksaw.co.za/blo
 3. **Final Message**: Complete response is sent as the final message
 4. **Fallback**: If draft messages fail, falls back to regular message with "Processing..." indicator
 
-## Deploy the sample application
+# Deploy the sample application
 
 - Create your bot using [BotFather](https://core.telegram.org/bots#6-botfather), and note the token, e.g. 12334342:ABCD124324234
 - Update ptb_lambda.py with the token
