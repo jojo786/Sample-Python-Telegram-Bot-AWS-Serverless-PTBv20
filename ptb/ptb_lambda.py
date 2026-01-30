@@ -1,6 +1,7 @@
 import json
 import asyncio
 import boto3
+import time
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 
@@ -17,12 +18,27 @@ bedrock = boto3.client('bedrock-runtime')
 #/start handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print("Start command received")
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a Telegram GenAI chatbot powered by Amazon Bedrock and Python Telegram Bot (PTB) library, running on AWS Serverless. Ask me anything!")
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a GenAI chatbot powered by Amazon Bedrock with real-time streaming responses, running on AWS Serverless. Ask me anything!")
 
-#handler to send user messages to Bedrock and return AI response
+#handler to send user messages to Bedrock and return AI response with streaming
 async def bedrock_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
+    chat_id = update.effective_chat.id
     print(f"Bedrock chat handler called with message: {user_message}")
+    
+    # Generate unique draft ID
+    draft_id = int(time.time() * 1000) % (2**31 - 1)
+    
+    # Send initial draft message
+    try:
+        await context.bot.send_message_draft(
+            chat_id=chat_id,
+            draft_id=draft_id,
+            text="Thinking..."
+        )
+    except Exception as e:
+        print(f"Draft message failed, using regular message: {e}")
+        await context.bot.send_message(chat_id=chat_id, text="Processing...")
     
     # Prepare request for Claude
     request_body = {
@@ -38,26 +54,53 @@ async def bedrock_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     }
     
     try:
-        print("Calling Bedrock API")
-        # Call Bedrock
-        response = bedrock.invoke_model(
+        print("Calling Bedrock streaming API")
+        # Call Bedrock with streaming
+        response = bedrock.invoke_model_with_response_stream(
             modelId='global.anthropic.claude-sonnet-4-5-20250929-v1:0',
             body=json.dumps(request_body)
         )
         
-        print("Parsing Bedrock response")
-        # Parse response
-        response_body = json.loads(response['body'].read())
-        ai_response = response_body['content'][0]['text']
-        print(f"AI response: {ai_response[:100]}...")
+        print("Processing streaming response")
+        accumulated_text = ""
+        stream = response.get('body')
         
-        # Send AI response back to user
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=ai_response)
-        print("Response sent to user")
+        if stream:
+            for event in stream:
+                chunk = event.get('chunk')
+                if chunk:
+                    message = json.loads(chunk.get("bytes").decode())
+                    
+                    if message['type'] == "content_block_delta":
+                        text_chunk = message['delta'].get('text', '')
+                        if text_chunk:
+                            accumulated_text += text_chunk
+                            
+                            # Update draft every 50 characters to show progress
+                            if len(accumulated_text) % 50 < len(text_chunk):
+                                try:
+                                    await context.bot.send_message_draft(
+                                        chat_id=chat_id,
+                                        draft_id=draft_id,
+                                        text=accumulated_text
+                                    )
+                                except Exception as e:
+                                    print(f"Draft update failed: {e}")
+                    
+                    elif message['type'] == "message_stop":
+                        print("Stream completed")
+                        break
+        
+        # Send final complete message
+        if accumulated_text:
+            await context.bot.send_message(chat_id=chat_id, text=accumulated_text)
+            print(f"Final response sent: {len(accumulated_text)} characters")
+        else:
+            await context.bot.send_message(chat_id=chat_id, text="I apologize, but I couldn't generate a response. Please try again.")
         
     except Exception as e:
         print(f"Error in bedrock_chat: {e}")
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Sorry, I encountered an error: {str(e)}")
+        await context.bot.send_message(chat_id=chat_id, text=f"Sorry, I encountered an error: {str(e)}")
 
 #lambda handler, which is what will be invoked by AWS Lambda, which calls main
 def lambda_handler(event, context):

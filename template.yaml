@@ -23,11 +23,13 @@ Resources:
       Handler: ptb_lambda.lambda_handler
       FunctionUrlConfig:
         AuthType: NONE
+        InvokeMode: RESPONSE_STREAM
       Policies:
         - Statement:
           - Effect: Allow
             Action:
               - bedrock:InvokeModel
+              - bedrock:InvokeModelWithResponseStream
             Resource: "*"
 
 Outputs:
