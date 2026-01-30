@@ -177,4 +177,4 @@ Next, you can use AWS Serverless Application Repository to deploy ready to use A
 - **Add error recovery** with retry logic and graceful degradation when streaming fails
 - Want to store data in a serverless database? Try out [Amazon DynamoDB](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-dynamo-db.html)
 - High load, and what to respond async to Telegram? Try adding an [SQS queue in front of the Lambda function](https://serverlessland.com/patterns/sqs-lambda)
-- Check out [this fully featured Telegram Bot](https://github.com/jojo786/TelegramTasweerBot) running on AWS Serverless
+- Check out [this fully featured Telegram GenAI ChatBot](https://github.com/jojo786/aws-bedrock-telegram-genai-chatbot) running on AWS Serverless
