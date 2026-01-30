@@ -1,1 +1,2 @@
 python-telegram-bot==22.6
+boto3

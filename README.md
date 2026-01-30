@@ -1,29 +1,30 @@
-# Sample-Python-Telegram-Bot-AWS-Serverless-PTBv20.x
+# Sample-Python-Telegram-Bot-AWS-Serverless-PTBv20.x - Bedrock AI Chatbot
 
 This is for PTB v20.x (and higher), which has made some [async](https://github.com/python-telegram-bot/python-telegram-bot/discussions/2351) changes. 
 For PTB v13.x, see [this repo](https://github.com/jojo786/Sample-Python-Telegram-Bot-AWS-Serverless/)
 
-This project contains source code and supporting files for a [Python Telegram Bot](https://python-telegram-bot.readthedocs.io/en/stable/) v20.x serverless application, using [Webhooks](https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks), that you can deploy with the [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html). Serverless is the best way to run a bot - with webhooks, there is no polling, and your bot only gets invoked when needed. You can run this for free - the [AWS Lambda free tier](https://aws.amazon.com/lambda/pricing/) includes one million free requests per month and 400,000 GB-seconds of compute time per month.
+This project contains source code and supporting files for a [Python Telegram Bot](https://python-telegram-bot.readthedocs.io/en/stable/) v20.x serverless Telegram chatbot application powered by **Amazon Bedrock AI**, using [Webhooks](https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks), that you can deploy with the [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html). 
+
+**🤖 AI-Powered**: This bot uses Amazon Bedrock's Claude 4.5 Sonnet model to provide intelligent conversational AI responses instead of simple echo functionality.
+
+Serverless is the best way to run a bot - with webhooks, there is no polling, and your bot only gets invoked when needed. You can run this for free - the [AWS Lambda free tier](https://aws.amazon.com/lambda/pricing/) includes one million free requests per month and 400,000 GB-seconds of compute time per month.
 
 # Versions
 - Python 3.14 
 - python-telegram-bot 22.6 (pinned in `requirements.txt`)
 
 # Architecture
-Requests come in via the [Lambda Function URL](https://aws.amazon.com/blogs/aws/announcing-aws-lambda-function-urls-built-in-https-endpoints-for-single-function-microservices/) endpoint, which get routed to a Lambda function. The Lambda function runs and posts back to Telegram. Logs are stored on CloudWatch. All of this is defined using [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html), an IaC toolkit that simplifies building and running serverless applications on AWS.
-![architecture](Architecture.png)
-
- 
+Requests come in via the [Lambda Function URL](https://aws.amazon.com/blogs/aws/announcing-aws-lambda-function-urls-built-in-https-endpoints-for-single-function-microservices/) endpoint, which get routed to a Lambda function. The Lambda function processes user messages and sends them to **Amazon Bedrock** for AI-powered responses using Claude 4.5 Sonnet, then posts the AI response back to Telegram. Logs are stored on CloudWatch. All of this is defined using [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html), an IaC toolkit that simplifies building and running serverless applications on AWS.
 
 It includes the following files and folders.
 
-- ptb_lambda.py - Code for the bot's Lambda function. It echos back whatever text is sent to the bot.
+- ptb_lambda.py - Code for the bot's Lambda function. It integrates with Amazon Bedrock to provide AI-powered conversational responses using Claude 4.5 Sonnet.
 - events - Invocation events that you can use to invoke the function.
 - tests - Unit tests for the application code. 
-- template.yaml - A template that defines the application's AWS resources.
-- requirements.txt - which pins the version of python-telegram-bot
+- template.yaml - A template that defines the application's AWS resources, including IAM permissions for Bedrock access.
+- requirements.txt - which pins the version of python-telegram-bot and includes boto3 for Bedrock integration
 - diagram.py - Uses [Diagrams](https://github.com/mingrammer/diagrams) to visualise the architecture:
-![Diagram](ptb-aws.png)
+![Diagram](ptb-aws-bedrock.png)
 
 The application uses several AWS resources, including a Lambda function and a Lambda Function URL HTTPS endpoint as a Telegram webhook. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
 
@@ -46,7 +47,8 @@ The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI
 
 - Create your bot using [BotFather](https://core.telegram.org/bots#6-botfather), and note the token, e.g. 12334342:ABCD124324234
 - Update ptb_lambda.py with the token
-- Install AWS CLI, and configure it
+- **Ensure you have access to Amazon Bedrock Claude models in your AWS account** - you may need to request model access in the Bedrock console
+- Install AWS CLI, and configure it with appropriate permissions for Lambda and Bedrock
 
 The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. 
 
@@ -151,6 +153,9 @@ Next, you can use AWS Serverless Application Repository to deploy ready to use A
 
 # Whats Next?
 - Instead of storing the Telegram token in your source code, use [Lambda Environment Variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html), or [AWS SSM](https://aws.amazon.com/blogs/compute/sharing-secrets-with-aws-lambda-using-aws-systems-manager-parameter-store/) to securely store the token
+- **Add response streaming** for real-time AI responses using Bedrock's streaming API and Telegram's draft message updates
+- **Implement chat history** by storing conversation context in DynamoDB for multi-turn conversations
+- **Customize AI behavior** by modifying the system prompts and temperature settings for different use cases
 - Want to store data in a serverless database? Try out [Amazon DynamoDB](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-dynamo-db.html)
 - High load, and what to respond async to Telegram? Try adding an [SQS queue in front of the Lambda function](https://serverlessland.com/patterns/sqs-lambda)
 - Check out [this fully featured Telegram Bot](https://github.com/jojo786/TelegramTasweerBot) running on AWS Serverless
